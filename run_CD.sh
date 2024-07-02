@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+gpu_ids=0
+dataset_type=bcd
+dataset_root=/home/priscilla/Dataset/S2Looking/All
+checkpoint_dir=./checkpoints
+tb_dir=./tb_vis
+vis_dir=./vis
+split='train'
+val_split='val'
+#pretrain='./pretrain/pretrained_changeformer.pt'
+
+epoch=300
+batch_size=8
+optimizer=adamw
+encoder_arc=efficientnet_ayn
+decoder_arc=ayanet
+lr=0.0001
+
+project_name=AYANet_S2Looking_efficientnetonly_mtf2iadesv2_${encoder_arc}_${decoder_arc}_${split}_${val_split}_${optimizer}_e${epoch}_b${batch_size}_lr${lr}_newlrlambda
+
+CUDA_VISIBLE_DEVICES=0 python train.py --gpu_ids ${gpu_ids} --dataset ${dataset_type} --split ${split} --val_split ${val_split} --datadir ${dataset_root} --checkpointroot ${checkpoint_dir} --visroot ${vis_dir} --tbroot ${tb_dir} --max-epochs ${epoch} --optimizer ${optimizer} --batch-size ${batch_size} --lr ${lr} --encoder-arch ${encoder_arc} --decoder-arch ${decoder_arc} --project_name ${project_name}
+
+#--pretrain ${pretrain}
