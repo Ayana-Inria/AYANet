@@ -1,5 +1,6 @@
 import os
 from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
 import numpy as np
 
 def crop_levir():
@@ -260,82 +261,109 @@ def crop_s2looking():
 
 def crop_whu():
     '''
-    Crop WHU-CD dataset in original resolution with this folder structure:
-    !!! Make sure the train, test, and val folders are named exactly like what is written below
+    First, change the original folder structure of the whole image from this:
     -WHU/
-        ├─train
-            ├─Image1
-                ├─1.png
+        ├─2012
+            ├─whole_image
+                ├─test
+                    ├─image
+                        ├─2012_test.tif
+                    ├─label
+                        ├─2012_test.tif
+                ├─train
+                    ├─image
+                        ├─2012_train.tif
+                    ├─label
+                        ├─2012_train.tif
+            ├─splited_images
                 ...
-            ├─Image2
-                ├─1.png
+            
+        ├─2016
+            ├─whole_image
+                ├─test
+                    ├─image
+                        ├─2016_test.tif
+                    ├─label
+                        ├─2016_test.tif
+                ├─train
+                    ├─image
+                        ├─2016_train.tif
+                    ├─label
+                        ├─2016_train.tif
+            ├─splited_images
                 ...
-            ├─label
-                ├─1.png
-                ...
-            ├─label1
-                ├─1.png
-                ...
-            ├─label2
-                ├─1.png
-                ...
-        ├─test
-            ├─Image1
-                ├─2.png
-                ...
-            ├─Image2
-                ├─2.png
-                ...
-            ├─label
-                ├─2.png
-                ...
-            ├─label1
-                ├─2.png
-                ...
-            ├─label2
-                ├─2.png
-                ...
-        ├─val
-            ├─Image1
-                ├─6.png
-                ...
-            ├─Image2
-                ├─6.png
-                ...
-            ├─label
-                ├─6.png
-                ...
-            ├─label1
-                ├─6.png
-                ...
-            ├─label2
-                ├─6.png
-                ...
+        ├─change_label
+            ├─test
+                ├─change_label.tif
+            ├─train
+                ├─change_label.tif
     
-    
-    to 256 x 256 images with this folder structure
+    to this:
+
+    -WHU/
+        ├─2012
+            ├─test
+                ├─2012_test.tif
+            ├─train
+                ├─2012_train.tif
+        ├─2016
+            ├─test
+                ├─2016_test.tif
+            ├─train
+                ├─2016_train.tif
+        ├─change_label
+            ├─test
+                ├─change_label.tif
+            ├─train
+                ├─change_label.tif
+
+    Finally, by executing the code below, it will crop the images to 256 x 256  with this folder structure:
     -WHU-Cropped
         ├─A
-            ├─img1.png
-            ...
+            ├─test
+                ├─0.png
+                ...
+            ├─train
+                ├─1.png
+                ...
         ├─B
-            ├─img1.png
-            ...
+            ├─test
+                ├─0.png
+                ...
+            ├─train
+                ├─1.png
+                ...
         ├─label
-            ├─img1.png
-            ...
+           ├─test
+                ├─0.png
+                ...
+            ├─train
+                ├─1.png
+                ...
         └─list
             ├─val.txt
             ├─test.txt
             └─train.txt
     '''
+    # Path to the root folder of original resolution images
+    ori_folder = r"/mnt/c/Users/prisc/OneDrive - unige.it/Documents/Dataset/WHU/WHU"
+    # Path to the root folder of cropped images
+    cropped_folder = r"/mnt/c/Users/prisc/OneDrive - unige.it/Documents/Dataset/WHU/WHU-Cropped"
 
-    full_size_pre_folder = './Dataset/WHU/2012/'
-    full_size_post_folder = './Dataset/WHU/2016/'
-    full_size_label_folder = './Dataset/WHU/change_label/'
-    crop_label_folder = './Dataset/WHU/label/'
-    crop_pre_folder = './Dataset/WHU/A/'
-    crop_post_folder = './Dataset/WHU/B/'
+    full_size_pre_folder = os.path.join(ori_folder, '2012')
+    full_size_post_folder = os.path.join(ori_folder, '2016')
+    full_size_label_folder =  os.path.join(ori_folder, 'change_label')
+    crop_label_folder = os.path.join(cropped_folder, 'label')
+    crop_pre_folder = os.path.join(cropped_folder, 'A')
+    crop_post_folder = os.path.join(cropped_folder, 'B')
+
+    if not os.path.exists(crop_label_folder):
+        os.makedirs(crop_label_folder)
+    if not os.path.exists(crop_pre_folder):
+        os.makedirs(crop_pre_folder)
+    if not os.path.exists(crop_post_folder):
+        os.makedirs(crop_post_folder)
+
     folder = ['train', 'test']
     label_file = 'change_label.tif'
 
@@ -366,7 +394,6 @@ def crop_whu():
         for i in range(total_H):
             for j in range(total_W):
                 if i == total_H - 1 and j == total_W -1:
-                    print('End of H and End of W')
                     countwh += 1
                     if split == 'train':
                         crop_pre = img_pre[cH*i-6:cH*(i+1), cW*j-5:cW*(j+1)]
@@ -378,13 +405,11 @@ def crop_whu():
                         crop_label = label[cH*i-6:cH*(i+1), cW*j:cW*(j+1)]
                 elif i == total_H - 1:
                     counth += 1
-                    print('End of H')
                     crop_pre = img_pre[cH*i-6:cH*(i+1), cW*j:cW*(j+1)]
                     crop_post = img_post[cH*i-6:cH*(i+1), cW*j:cW*(j+1)]
                     crop_label = label[cH*i-6:cH*(i+1), cW*j:cW*(j+1)]
                 elif j == total_W -1:
                     countw += 1
-                    print('End of W')
                     if split == 'train':
                         crop_pre = img_pre[cH*i:cH*(i+1), cW*j-5:cW*(j+1)]
                         crop_post = img_post[cH*i:cH*(i+1), cW*j-5:cW*(j+1)]
@@ -394,7 +419,6 @@ def crop_whu():
                         crop_post = img_post[cH*i:cH*(i+1), cW*j:cW*(j+1)]
                         crop_label = label[cH*i:cH*(i+1), cW*j:cW*(j+1)]
                 else:
-                    print('Normal part')
                     crop_pre = img_pre[cH*i:cH*(i+1), cW*j:cW*(j+1)]
                     crop_post = img_post[cH*i:cH*(i+1), cW*j:cW*(j+1)]
                     crop_label = label[cH*i:cH*(i+1), cW*j:cW*(j+1)]
@@ -410,34 +434,40 @@ def crop_whu():
                 print('Label size : ', crop_label.shape)
 
                 if pre_H != 256 or pre_W != 256 or post_H != 256 or post_W != 256 or label_H != 256 or label_W != 256:
-                    print('!!!!!!There is an image with a wrong size!!!!!!!')
-                    print('End of W and H : ', countwh)
-                    print('End of H : ', counth)
-                    print('End of W : ', countw)
                     exit(-1)
 
-                new_name = str(total) + '.png'
-                new_pre_path = os.path.join(crop_pre_folder, split, new_name)
-                new_post_path = os.path.join(crop_post_folder, split, new_name)
-                new_label_path = os.path.join(crop_label_folder, split, new_name)
+                new_name = split + '_' + str(total) + '.png'
+                new_pre_path = os.path.join(crop_pre_folder, split)
+                new_pre_img_path = os.path.join(crop_pre_folder, split, new_name)
+                new_post_path = os.path.join(crop_post_folder, split)
+                new_post_img_path = os.path.join(crop_post_folder, split, new_name)
+                new_label_path = os.path.join(crop_label_folder, split)
+                new_label_img_path = os.path.join(crop_label_folder, split, new_name)
+                if not os.path.exists(new_pre_path):
+                    os.makedirs(new_pre_path)
+                if not os.path.exists(new_post_path):
+                    os.makedirs(new_post_path)
+                if not os.path.exists(new_label_path):
+                    os.makedirs(new_label_path)
 
                 lbl = Image.fromarray(crop_label)
-                lbl.save(new_label_path)
+                lbl.save(new_label_img_path)
                 pre = Image.fromarray(crop_pre)
-                pre.save(new_pre_path)
+                pre.save(new_pre_img_path)
                 post = Image.fromarray(crop_post)
-                post.save(new_post_path)
+                post.save(new_post_img_path)
                 total += 1
-                print('Write to : ', new_label_path)
-                print('Write to : ', new_pre_path)
-                print('Write to : ', new_post_path)
+
+                print('Write to : ', new_label_img_path)
+                print('Write to : ', new_pre_img_path)
+                print('Write to : ', new_post_img_path)
 
 if __name__ == "__main__":
     #### Crop LEVIR-CD dataset to 256 x 256
-    # crop_levir()
+    crop_levir()
 
     #### Crop S2Looking dataset to 256 x 256
-    crop_s2looking()
+    # crop_s2looking()
 
     #### Crop WHU-CD dataset to 256 x 256
     # crop_whu()

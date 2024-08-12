@@ -90,7 +90,7 @@ val_split='val'
 epoch=300
 batch_size=8
 optimizer=adamw
-encoder_arc=double # 'double': double encoders, 'gaborencoder': Gabor encoder only, '': EfficientNet only
+encoder_arc=double # 'double': double encoders, 'gaborencoder': Gabor encoder only, 'efficientnet_ayn': EfficientNet only
 decoder_arc=ayanet
 lr=0.0001
 
@@ -118,7 +118,7 @@ checkpoint='All' # Option 'All' will run the evaluation on all weights stored in
 project_name='AYANet_S2Looking_gaborencoderonly_mtf2iadesv2_gaborencoderv2_drtanet_train_val_adamw_e300_b8_lr0.0001_newlrlambda' # Specify which model/experiment you want to do the evaluation with
 
 batch_size=8
-encoder_arc=double # 'double': double encoders, 'gaborencoder': Gabor encoder only, '': EfficientNet only
+encoder_arc=double # 'double': double encoders, 'gaborencoder': Gabor encoder only, 'efficientnet_ayn': EfficientNet only
 decoder_arc=ayanet
 
 ```
@@ -155,7 +155,7 @@ We also provide the code to crop each dataset to the size we used for training i
     cropped_folder = r"/mnt/c/Dataset/S2Looking-Cropped"
 ```
 
-3. There is no default split for the WHU-CD dataset. You can find the split we used for training in `misc/WHU_split/` or you can randomly split them by ...
+3. There is no default split for the WHU-CD dataset. For this, the code to process the WHU-CD dataset will have different folders for train and test splits even after the cropping process. You can find the split we used for training in `misc/WHU_split/`. Simply copy these files to the `list` folder and unify all the images so the folder will have the structure indicated in `Dataset Preparation` section above, after running the code
 
 ## :trollface: License
 The code is released under the GPL-3.0-only license. See `LICENSE` file for more details.
