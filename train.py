@@ -1,6 +1,5 @@
 import os
 import csv
-import cv2
 import torch
 from models.AYANet import AYANet
 import numpy as np
@@ -298,11 +297,11 @@ class CDTrain():
             self.logger.write('Epoch_to_start = %d, Historical_best_acc = %.4f (at epoch %d)\n' %
                   (self.epoch_to_start, self.best_val_acc, self.best_epoch_id))
             self.logger.write('\n')
-        elif self.args.pretrain is not None:
-            print("Initializing backbone weights from: " + self.args.pretrain)
-            self.net_G.load_state_dict(torch.load(self.args.pretrain), strict=False)
-            self.net_G.to(self.device)
-            self.net_G.eval()
+        # elif self.args.pretrain is not None:
+        #     print("Initializing backbone weights from: " + self.args.pretrain)
+        #     self.net_G.load_state_dict(torch.load(self.args.pretrain), strict=False)
+        #     self.net_G.to(self.device)
+        #     self.net_G.eval()
         else:
             print('training from scratch...')
 
@@ -500,7 +499,6 @@ if __name__ =="__main__":
     parser.add_argument('--optimizer', type=str, required=True)
     parser.add_argument('--encoder-arch', type=str, required=True)
     parser.add_argument('--decoder-arch', type=str, required=True)
-    parser.add_argument('--pretrain', default=None, type=str)
     parser.add_argument('--project_name', type=str)
 
     args = parser.parse_args()

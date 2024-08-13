@@ -3,7 +3,6 @@ import os
 import random
 import glob
 
-
 def seed_random(seed=2020):
     # 加入以下随机种子，数据输入，随机扩充等保持一致
     random.seed(seed)

@@ -14,13 +14,12 @@ The official implementation of "AYANet: A Gabor Wavelet-based and CNN-based Doub
 We run the code in an Anaconda virtual environment on Ubuntu 22.04.3 LTS (GNU/Linux 5.15.153.1-microsoft-standard-WSL2 x86_64).
 
 ### Requirements
-All requirements are listed in `requirements.txt`.
-Create a virtual ``conda`` environment named ``ayanet`` with the following command:
-
+You can create an Anaconda environment named ``ayanet`` from `environment.yml`.
 ```
-conda create -n ayanet --file requirements.txt
+conda env create -f environment.yml
 conda activate ayanet
 ```
+
 ### Clone the Repository
 
 ```shell
@@ -104,7 +103,7 @@ sh run_CD.sh
 ```
 
 ### Evaluation
-1. The evaluation settings can be modified in `eval.sh`
+1. During the training, every set of weights that produces new highest performance is saved in the `checkpoint_dir` under `project_name` set in `run_CD.sh`. To evaluate using these weights, simply modify the script `eval.sh`. Make sure that the network's hyperparameters are the same with the ones set during the training and set  `checkpoint_dir`, `project_name`, `dataset_root` correctly. Set `checkpoint='All'` if you want to evaluate all set of weights. It will produce a text file `report.txt` in the same folder where the weights are being stored, stated the evaluation results followed by the name of the checkpoint corresponding to the evaluation. Otherwise, set the checkpoint's name to evaluate using only 1 particular set of weights. The `vis_dir` is where the qualitative results are stored. You can find the original bi-temporal images, the ground truth, the prediction, and the True Positive, False Positive, False Negative, and True Negative indicators, concatenated together. The number of set of the test images saved in one image will depend on the number of `batch_size` i.e., if you set it to 8, it means that one image in `vis_dir` will show you 8 set of bi-temporal images with their corresponding ground truth, prediction, etc.
 
 ```bash
 gpu_ids=0

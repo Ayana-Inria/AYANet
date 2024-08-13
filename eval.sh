@@ -2,13 +2,13 @@
 
 gpu_ids=0
 dataset_type=bcd
-dataset_root=/home/priscilla/Dataset/S2Looking/All
+dataset_root=./../../../Dataset/LEVIR/LEVIR-Cropped
 test_split='test'
 checkpoint_dir=./checkpoints
 vis_dir=./vis
 resultdir=./results
 checkpoint='All'
-project_name='AYANet_S2Looking_gaborencoderonly_mtf2iadesv2_gaborencoderv2_drtanet_train_val_adamw_e300_b8_lr0.0001_newlrlambda'
+project_name='rep_AYANet_LEVIR_double_mtf2iadesv2_double_ayanet_train_val_adamw_e300_b8_lr0.0001_newlrlambda'
 
 batch_size=8
 encoder_arc=gaborencoder

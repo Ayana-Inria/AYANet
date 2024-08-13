@@ -1,8 +1,5 @@
 import datasets
-from models.AYANet import AYANet, AYANet2
 import os
-import csv
-import cv2
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -12,18 +9,14 @@ from tqdm import tqdm
 import torch.nn.functional as F
 import argparse
 import matplotlib.pyplot as plt
+from thop import profile
 
-import datasets
+from models.AYANet import AYANet
 from misc.metric_tool import ConfuseMatrixMeter
 from misc.logger_tool import Logger
 import misc.utils as utils
 from misc.utils import de_norm
 
-from pytorch_grad_cam import GradCAM
-from pytorch_grad_cam.utils.image import show_cam_on_image
-from PIL import Image
-
-from thop import profile
 
 class CDEval():
     def __init__(self, arguments):
@@ -32,11 +25,7 @@ class CDEval():
         self.device = torch.device("cuda:%s" % self.args.gpu_ids[0] if torch.cuda.is_available() and len(self.args.gpu_ids)>0
                                    else "cpu")
 
-        # self.net_G = TANet(self.args.encoder_arch, self.args.local_kernel_size, self.args.attn_stride,
-        #                    self.args.attn_padding, self.args.attn_groups, self.args.drtam, self.args.refinement)
-
-        self.net_G = AYANet2(self.args.encoder_arch, self.args.decoder_arch, self.args.local_kernel_size, self.args.attn_stride,
-                           self.args.attn_padding, self.args.attn_groups, self.args.drtam, self.args.refinement)
+        self.net_G = AYANet(self.args.encoder_arch, self.args.decoder_arch)
 
         self.dataset_eval_loader = DataLoader(datasets.bcd_eval(pjoin(self.args.datadir), self.args.test_split),
                                           num_workers=self.args.num_workers, batch_size=self.args.batch_size,
@@ -46,7 +35,6 @@ class CDEval():
 
         self.ckpt_list = []
         if self.args.checkpoint != 'All':
-            # self.checkpoint = pjoin(self.args.checkpointdir, self.args.checkpoint)
             ckpt_path = pjoin(self.args.checkpointdir, self.args.checkpoint)
             self.ckpt_list.append(ckpt_path)
         else:
@@ -88,40 +76,6 @@ class CDEval():
 
         except:
             raise FileNotFoundError('no such checkpoint %s' % self.checkpoint)
-    
-    def _visualize_weight(self):
-        checkpoint = torch.load(self.checkpoint, map_location=self.device)
-
-        weights = checkpoint['model_G_state_dict']
-        
-        ### GFN ###
-        # count = 24
-        # convs = []
-        # gabors = []
-        # for weight in list(weights):
-        #     if count == -1 : break
-        #     print(weight)
-        #     kernel = weights[weight]
-        #     if 'MFilters' in weight:
-        #         kernel = np.asarray(kernel.cpu()).astype('f').transpose(1, 2, 0)
-        #         gabors.append(kernel)
-        #         print('kernel size : ', kernel.shape)
-        #     elif 'gfn' in weight:
-        #         _, _, c, k, _ = kernel.size()
-        #         kernel = kernel.view(c, k, k)
-        #         kernel = np.asarray(kernel.cpu()).astype('f').transpose(1, 2, 0)
-        #         convs.append(kernel)
-        #         print('kernel size : ', kernel.shape)
-            
-            # vis.append(weights[weight])
-            # print(weights[weight].size())
-        #     count -= 1
-
-        # file_name = './weights_with_gabor.npz'
-        # np.savez(file_name, conv=convs, gabor=gabors)
-        # print('Saved..')
-
-        count = 24
 
 
     def _clear_cache(self):
@@ -218,101 +172,6 @@ class CDEval():
         self.G_pred = self.net_G(inputs_img)
         # self.G_pred, self.G_mask1, self.G_mask2 = self.net_G(inputs_img)
 
-    def _extract_features(self):
-        from PIL import Image
-        import numpy as npi
-        import matplotlib.pyplot as plt
-
-        t0_path = '/home/priscilla/Codes/AYANet/features/test_34_1_3.png'
-        t1_path = '/home/priscilla/Codes/AYANet/features/test_18_0_3.png'
-        destination = '/home/priscilla/Codes/AYANet/features/'
-
-        img_t0 = np.asarray(Image.open(t0_path).convert('RGB'))
-        img_t1 = np.asarray(Image.open(t1_path).convert('RGB'))
-        img_t0 = np.asarray(img_t0).astype('f').transpose(2, 0, 1)
-        img_t1 = np.asarray(img_t1).astype('f').transpose(2, 0, 1)
-        img_t0 = torch.from_numpy(img_t0)
-        C, H, W = img_t0.size()
-        img_t0 = img_t0.view(1, C, H, W)
-        img_t1 = torch.from_numpy(img_t1)
-        img_t1 = img_t1.view(1, C, H, W)
-
-        inputs = torch.cat((img_t0, img_t1), axis=1).to(self.device)
-        # inputs = torch.from_numpy(np.concatenate((img_t0, img_t1), axis=0)).to(self.device)
-        print('Image size : ', inputs.size())
-        self.G_pred, gabor_feat0, gabor_feat1 = self.net_G(inputs)
-
-        for i, feat in enumerate(gabor_feat0):
-            feat = feat.to('cpu').detach()
-            _, C, H, W = feat.size()
-            feat = feat.view(C, H, W)
-            print('features size : ', feat.size())
-            feat0 = np.asarray(feat).astype('f').transpose(1, 2, 0)
-            # feat1 = np.asarray(gabor_feat1).astype('f').transpose(1, 2, 0)
-            
-            px = 8
-            py = int(C/px)
-            ix = 1
-            for _ in range(px*py):
-                # ax = plt.subplot(px, py, ix)
-                # ax.set_xticks([])
-                # ax.set_yticks([])
-                plt.imshow(feat0[:,:,ix-1], cmap='gray')
-                ix += 1
-            # plt.imshow(feat0, cmap='gray')
-            # plt.title("Features stage %d" % (i))
-                name = "feat_stage=%d_filter_%d.jpg" % (i,ix)
-                name = os.path.join(destination, name)
-                plt.savefig(name)
-                print('saved to : ', name)
-
-
-
-    def _visualize_grad(self):
-        class EncoderExtractor(torch.nn.Module):
-            def __init__(self, model):
-                super(EncoderExtractor, self).__init__()
-                self.model = model
-                self.feature_extractor = torch.nn.Sequential(*list(self.model.children())[:-1])
-                self.encoder = self.feature_extractor[0]
-
-            def __call__(self,x):
-                # self.encoder(x) in layer 4 of encoder returns list of 4 tensors (presumably the features of each block)
-                # for some reasons, this __call__ part is not overriding the original output which makes the error of 'tuple does not have .cpu() method'
-                # because in the library, it is expected that the result is in tensor type
-                return self.encoder(x)[0]
-
-                
-        class ChangeDetectionTarget:
-            def __init__(self, category, mask):
-                self.category = category
-                self.mask = torch.from_numpy(mask)
-                if torch.cuda.is_available():
-                    self.mask = self.mask.cuda()
-                
-            def __call__(self, model_output):
-                # return (model_output[self.category, :, : ] * self.mask).sum()
-                return torch.argmax(model_output, dim=1)
-        
-        model = EncoderExtractor(self.net_G)
-        inputs_img = self.batch['I'].to(self.device)
-        img_t0,img_t1 = torch.split(inputs_img,3,1)
-        G_pred = self.G_pred.detach()
-        G_pred = torch.argmax(G_pred, dim=1).to('cpu')
-        # change_mask = G_pred * 255
-        change_mask_float = np.float32(G_pred.numpy())
-
-        target_layers = [self.net_G.encoder1.layer4[-1]]
-        targets = [ChangeDetectionTarget(1, change_mask_float)]
-
-        cam = GradCAM(model=model, target_layers=target_layers, use_cuda=torch.cuda.is_available())
-        grayscale_cam = cam(input_tensor = inputs_img, targets=targets)[0,:]
-        cam_image = show_cam_on_image(img_t0, grayscale_cam, use_rgb=True)
-    
-        img_grad = Image.fromarray(cam_image)
-        file_name = os.path.join(
-            self.args.visdir, 'grad_' + str(self.batch_id)+'.jpg')
-        img_grad.save(file_name)
 
     def eval(self):
         for ckpt in self.ckpt_list:
@@ -321,17 +180,11 @@ class CDEval():
 
             self.logger.write('Begin evaluation...\n')
             self._clear_cache()
-
-            # self._extract_features()
             self.net_G.eval()
-            # self._visualize_weight()
-
 
             for self.batch_id, (inputs_test, mask_test) in enumerate(tqdm(self.dataset_eval_loader)):
                 with torch.no_grad():
                     self._forward(inputs_test, mask_test)
-                    # self._visualize_weight()
-                # self._visualize_grad()
                 self._collect_running_batch_states()
             self._collect_epoch_states()
 
@@ -349,14 +202,8 @@ if __name__ =='__main__':
     parser.add_argument('--checkpoint', required=True)
     parser.add_argument('--encoder-arch', type=str, required=True)
     parser.add_argument('--decoder-arch', type=str, required=True)
-    parser.add_argument('--local-kernel-size',type=int, default=1)
-    parser.add_argument('--attn-stride', type=int, default=1)
-    parser.add_argument('--attn-padding', type=int, default=0)
-    parser.add_argument('--attn-groups', type=int, default=4)
     parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--batch-size', type=int, default=1)
-    parser.add_argument('--drtam', action='store_true')
-    parser.add_argument('--refinement', action='store_true')
     parser.add_argument('--store-imgs', action='store_true')
     parser.add_argument('--multi-gpu', action='store_true', help='processing with multi-gpus')
     parser.add_argument('--project_name', type=str)
