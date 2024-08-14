@@ -93,6 +93,8 @@ encoder_arc=double # 'double': double encoders, 'gaborencoder': Gabor encoder on
 decoder_arc=ayanet
 lr=0.0001
 
+seed=1302
+
 project_name=AYANet_S2Looking_efficientnetonly_mtf2iadesv2_${encoder_arc}_${decoder_arc}_${split}_${val_split}_${optimizer}_e${epoch}_b${batch_size}_lr${lr}_newlrlambda
 
 ```

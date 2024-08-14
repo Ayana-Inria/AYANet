@@ -12,11 +12,23 @@ from os.path import join as pjoin
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import argparse
+import random
 
 from misc.metric_tool import ConfuseMatrixMeter
 from misc.logger_tool import Logger, Timer
 # import misc.utils as utils
 
+def set_seed(seed: int = 1302) -> None:
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    # When running on the CuDNN backend, two further options must be set
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    # Set a fixed value for the hash seed
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    print(f"Random seed set as {seed}")
 
 class criterion_CEloss(nn.Module):
     def __init__(self,weight=None):
@@ -134,19 +146,6 @@ class CDTrain():
 
         print('Encoder:' + self.args.encoder_arch)
 
-        # if self.args.drtam:
-        #     folder_name = 'DR-TANet'
-        #     print('Dynamic Receptive Temporal Attention Network (DR-TANet)')
-        # else:
-        #     folder_name = 'TANet_k={}'.format(self.args.local_kernel_size)
-        #     print('Temporal Attention Network (TANet)')
-
-        # folder_name += ('_' + self.args.encoder_arch)
-
-        # if self.args.refinement:
-        #     folder_name += '_ref'
-        #     print('Adding refinement...')
-
         self.dataset_train_loader = DataLoader(datasets.bcd(pjoin(self.args.datadir), self.args.split),
                                           num_workers=self.args.num_workers, batch_size=self.args.batch_size,
                                           shuffle=True)
@@ -157,7 +156,7 @@ class CDTrain():
         self.device = torch.device("cuda:%s" % self.args.gpu_ids[0] if torch.cuda.is_available() and len(self.args.gpu_ids)>0
                                    else "cpu")
 
-        self.net_G = AYANet(self.args.encoder_arch, self.args.decoder_arch)
+        self.net_G = AYANet(self.args.encoder_arch, self.args.decoder_arch, self.args.seed)
 
         print(self.net_G)
         self.net_G = self._init_net(self.net_G, init_type='normal', init_gain=0.02, gpu_ids=self.args.gpu_ids)
@@ -500,6 +499,7 @@ if __name__ =="__main__":
     parser.add_argument('--encoder-arch', type=str, required=True)
     parser.add_argument('--decoder-arch', type=str, required=True)
     parser.add_argument('--project_name', type=str)
+    parser.add_argument('--seed', type=int, default=1302)
 
     args = parser.parse_args()
     args.checkpointdir = pjoin(args.checkpointroot, args.project_name)
@@ -510,6 +510,8 @@ if __name__ =="__main__":
 
     args.tbdir = pjoin(args.tbroot, args.project_name)
     os.makedirs(args.visdir, exist_ok=True)
+
+    set_seed(args.seed)
 
     if args.dataset == 'bcd':
         # train = train_bcd(parser.parse_args())
