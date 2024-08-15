@@ -156,7 +156,26 @@ We also provide the code to crop each dataset to the size we used for training i
     cropped_folder = r"/mnt/c/Dataset/S2Looking-Cropped"
 ```
 
-3. There is no default split for the WHU-CD dataset. For this, the code to process the WHU-CD dataset will have different folders for train and test splits even after the cropping process. You can find the split we used for training in `misc/WHU_split/`. Simply copy these files to the `list` folder and unify all the images so the folder will have the structure indicated in `Dataset Preparation` section above, after running the code
+3. There is no default split for the WHU-CD dataset. For this, the code to process the WHU-CD dataset will have different folders for train and test splits even after the cropping process. You can find the split we used for training in `reproduction/WHU_split/`. Simply copy these files to the `list` folder and unify all the images so the folder will have the structure indicated in `Dataset Preparation` section above, after running the code
+
+#### Reproduce the evaluation results
+You can download the weights of AYANet for each dataset, that produced the results published in the paper, from [Google Drive link](https://drive.google.com/drive/folders/1X160X8krIbdDNoBlkqnh8yN4e8cRRyzF?usp=sharing). To run the model using one of the sets, simply change the settings in `eval.sh`. For example, you put the weights in `reproduction/weights/`, change the settings like this if you want to reproduce the evaluation for the LEVIR-CD dataset: (Need to uncomment one part of EfficientNet (line 559) !!)
+```bash
+gpu_ids=0
+dataset_type=bcd
+dataset_root=/home/Dataset/LEVIR-Cropped # The path to the dataset folder
+test_split='test' # Do the evaluation on the test split
+checkpoint_dir=./reproduction 
+vis_dir=./vis # Visualization folder
+resultdir=./results
+checkpoint='AYANet_LEVIR_ICPR2024' # Name of the pretrain_weights
+project_name='weights' 
+
+batch_size=8
+encoder_arc=double
+decoder_arc=ayanet
+
+```
 
 ## :trollface: License
 The code is released under the GPL-3.0-only license. See `LICENSE` file for more details.
