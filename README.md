@@ -9,25 +9,25 @@
 The official implementation of "AYANet: A Gabor Wavelet-based and CNN-based Double Encoder for Building Change Detection in Remote Sensing"
 <br>
 
-## Environmental settings
+## :hammer_and_pick: Environmental settings
 
 We run the code in an Anaconda virtual environment on Ubuntu 22.04.3 LTS (GNU/Linux 5.15.153.1-microsoft-standard-WSL2 x86_64).
 
-### Requirements
+### :corn: :bug: Requirements
 You can create an Anaconda environment named ``ayanet`` from `environment.yml`.
 ```
 conda env create -f environment.yml
 conda activate ayanet
 ```
 
-### Clone the Repository
+### :house_with_garden: Clone the Repository
 
 ```shell
 git clone https://github.com/Ayana-Inria/AYANet.git
 cd AYANet
 ```
 
-### Dataset Preparation
+### :egg: Dataset Preparation
 Dataset needs to be structured as follows.
 
 ```
@@ -73,7 +73,7 @@ data structure
 
 `list`: contains `train.txt, val.txt and test.txt`, each file records the image names (XXX.png) in the change detection dataset.
 
-### Training
+### :hatching_chick: Training
 1. Set the parameters and hyperparameters for the model training in `run_CD.sh`
 
 ```bash
@@ -104,7 +104,7 @@ project_name=AYANet_S2Looking_efficientnetonly_mtf2iadesv2_${encoder_arc}_${deco
 sh run_CD.sh
 ```
 
-### Evaluation
+### :hatched_chick: Evaluation 
 1. During the training, every set of weights that produces new highest performance is saved in the `checkpoint_dir` under `project_name` set in `run_CD.sh`. To evaluate using these weights, simply modify the script `eval.sh`. Make sure that the network's hyperparameters are the same with the ones set during the training and set  `checkpoint_dir`, `project_name`, `dataset_root` correctly. Set `checkpoint='All'` if you want to evaluate all set of weights. It will produce a text file `report.txt` in the same folder where the weights are being stored, stated the evaluation results followed by the name of the checkpoint corresponding to the evaluation. Otherwise, set the checkpoint's name to evaluate using only 1 particular set of weights. The `vis_dir` is where the qualitative results are stored. You can find the original bi-temporal images, the ground truth, the prediction, and the True Positive, False Positive, False Negative, and True Negative indicators, concatenated together. The number of set of the test images saved in one image will depend on the number of `batch_size` i.e., if you set it to 8, it means that one image in `vis_dir` will show you 8 set of bi-temporal images with their corresponding ground truth, prediction, etc.
 
 ```bash
@@ -129,7 +129,7 @@ decoder_arc=ayanet
 sh eval.sh
 ```
 
-## Misc
+## :chicken: Misc
 Our network was tested on three datasets for remote sensing building change detection. 
 
 1. LEVIR-CD
@@ -144,7 +144,7 @@ Our network was tested on three datasets for remote sensing building change dete
     * Paper: [S2Looking: A Satellite Side-Looking Dataset for Building Change Detection](https://www.mdpi.com/2072-4292/13/24/5094)
     * Download: [Link](https://github.com/S2Looking/Dataset)
 
-### Reproduce the training data
+### :egg: :mag: Reproduce the training data
 We also provide the code to crop each dataset to the size we used for training i.e., 256 x 256. 
 1. The code can be found in `misc/dataset_tool.py`. We divide the cropping method for each dataset into 3 different functions:  `crop_levir()`, `crop_s2looking()`, `crop_whu()` because each of them has different folder structure originally. Make sure you have the same original folder structure as indicated in the comment of each function
 
@@ -158,7 +158,7 @@ We also provide the code to crop each dataset to the size we used for training i
 
 3. There is no default split for the WHU-CD dataset. For this, the code to process the WHU-CD dataset will have different folders for train and test splits even after the cropping process. You can find the split we used for training in `reproduction/WHU_split/`. Simply copy these files to the `list` folder and unify all the images so the folder will have the structure indicated in `Dataset Preparation` section above, after running the code
 
-#### Reproduce the evaluation results
+### :baby_chick: Reproduce the evaluation results
 You can download the weights of AYANet for each dataset, that produced the results published in the paper, from [Google Drive link](https://drive.google.com/drive/folders/1X160X8krIbdDNoBlkqnh8yN4e8cRRyzF?usp=sharing). To run the model using one of the sets, simply change the settings in `eval.sh`. For example, you put the weights in `reproduction/weights/`, change the settings like this if you want to reproduce the evaluation for the LEVIR-CD dataset: (Need to uncomment one part of EfficientNet (line 559) !!)
 ```bash
 gpu_ids=0
@@ -193,7 +193,7 @@ If you use this code for your research, please cite our paper (to be updated):
 }
 ```
 
-## Acknowledgement
+## :paw_prints: Acknowledgement
 * https://github.com/Herrccc/DR-TANet/tree/main
 * https://github.com/justchenhao/BIT_CD
 * https://github.com/jxgu1016/Gabor_CNN_PyTorch  
