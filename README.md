@@ -5,8 +5,7 @@
 </div>
 
 <br>
-<!-- The official implementation of **AYANet: A Gabor Wavelet-based and CNN-based Double Encoder for Building Change Detection in Remote Sensing** (ICPR 2024) -->
-The official implementation of "AYANet: A Gabor Wavelet-based and CNN-based Double Encoder for Building Change Detection in Remote Sensing"
+The official implementation of **AYANet: A Gabor Wavelet-based and CNN-based Double Encoder for Building Change Detection in Remote Sensing** (ICPR 2024)
 <br>
 
 ## :hammer_and_pick: Environmental settings

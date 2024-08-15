@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 # Results, Pictures
-*.png
+# *.png
 
 # Data file
 *.xlsx
