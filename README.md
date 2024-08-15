@@ -105,7 +105,10 @@ sh run_CD.sh
 ```
 
 ### :hatched_chick: Evaluation 
-1. During the training, every set of weights that produces new highest performance is saved in the `checkpoint_dir` under `project_name` set in `run_CD.sh`. To evaluate using these weights, simply modify the script `eval.sh`. Make sure that the network's hyperparameters are the same with the ones set during the training and set  `checkpoint_dir`, `project_name`, `dataset_root` correctly. Set `checkpoint='All'` if you want to evaluate all set of weights. It will produce a text file `report.txt` in the same folder where the weights are being stored, stated the evaluation results followed by the name of the checkpoint corresponding to the evaluation. Otherwise, set the checkpoint's name to evaluate using only 1 particular set of weights. The `vis_dir` is where the qualitative results are stored. You can find the original bi-temporal images, the ground truth, the prediction, and the True Positive, False Positive, False Negative, and True Negative indicators, concatenated together. The number of set of the test images saved in one image will depend on the number of `batch_size` i.e., if you set it to 8, it means that one image in `vis_dir` will show you 8 set of bi-temporal images with their corresponding ground truth, prediction, etc.
+1. During the training, every set of weights that produces new highest performance is saved in the `checkpoint_dir` under `project_name` set in `run_CD.sh`. To evaluate using these weights, simply modify the script `eval.sh`. 
+    * Make sure that the network's hyperparameters are the same with the ones set during the training and set  `checkpoint_dir`, `project_name`, `dataset_root` correctly
+    * Set `checkpoint='All'` if you want to evaluate all set of weights. It will produce a text file `report.txt` in the same folder where the weights are being stored, stated the evaluation results followed by the name of the checkpoint corresponding to the evaluation. Otherwise, set the checkpoint's name to evaluate using only 1 particular set of weights
+    * The `vis_dir` is where the qualitative results are stored. You can find the original bi-temporal images, the ground truth, the prediction, and the True Positive, False Positive, False Negative, and True Negative indicators, concatenated together. The number of set of the test images saved in one image will depend on the number of `batch_size` i.e., if you set it to 8, it means that one image in `vis_dir` will show you 8 set of bi-temporal images with their corresponding ground truth, prediction, etc
 
 ```bash
 gpu_ids=0
@@ -159,7 +162,9 @@ We also provide the code to crop each dataset to the size we used for training i
 3. There is no default split for the WHU-CD dataset. For this, the code to process the WHU-CD dataset will have different folders for train and test splits even after the cropping process. You can find the split we used for training in `reproduction/WHU_split/`. Simply copy these files to the `list` folder and unify all the images so the folder will have the structure indicated in `Dataset Preparation` section above, after running the code
 
 ### :baby_chick: Reproduce the evaluation results
-You can download the weights of AYANet for each dataset, that produced the results published in the paper, from [Google Drive link](https://drive.google.com/drive/folders/1X160X8krIbdDNoBlkqnh8yN4e8cRRyzF?usp=sharing). To run the model using one of the sets, simply change the settings in `eval.sh`. For example, you put the weights in `reproduction/weights/`, change the settings like this if you want to reproduce the evaluation for the LEVIR-CD dataset: (Need to uncomment one part of EfficientNet (line 559) !!)
+You can download the weights of AYANet for each dataset, that produced the results published in the paper, from [Google Drive link](https://drive.google.com/drive/folders/1X160X8krIbdDNoBlkqnh8yN4e8cRRyzF?usp=sharing)
+1. To run the model using one of the sets, simply change the settings in `eval.sh`. For example, you put the weights in `reproduction/weights/`, change the settings like this if you want to reproduce the evaluation for the LEVIR-CD dataset: 
+(For the technical reason, to run the model with these weights, it is necessary to uncomment one part of `models/EfficientNet.py` (line 559). This does not change the architecture of AYANet.)
 ```bash
 gpu_ids=0
 dataset_type=bcd
@@ -175,6 +180,11 @@ batch_size=8
 encoder_arc=double
 decoder_arc=ayanet
 
+```
+
+2. Run the script for evaluation
+```
+sh eval.sh
 ```
 
 ## :trollface: License
