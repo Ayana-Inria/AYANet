@@ -28,7 +28,7 @@ class CDEval():
         self.net_G = AYANet(self.args.encoder_arch, self.args.decoder_arch)
 
         self.dataset_eval_loader = DataLoader(datasets.bcd_eval(pjoin(self.args.datadir), self.args.test_split),
-                                          num_workers=self.args.num_workers, batch_size=self.args.batch_size,
+                                          batch_size=self.args.batch_size,
                                           shuffle=False)
 
         self.running_metric = ConfuseMatrixMeter(n_class=2)
@@ -190,7 +190,6 @@ class CDEval():
 
 
 if __name__ =='__main__':
-
     parser = argparse.ArgumentParser(description='START EVALUATING...')
     parser.add_argument('--gpu_ids', default=0)
     parser.add_argument('--dataset', type=str, default='bcd', required=True)
@@ -202,9 +201,7 @@ if __name__ =='__main__':
     parser.add_argument('--checkpoint', required=True)
     parser.add_argument('--encoder-arch', type=str, required=True)
     parser.add_argument('--decoder-arch', type=str, required=True)
-    parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--batch-size', type=int, default=1)
-    parser.add_argument('--store-imgs', action='store_true')
     parser.add_argument('--multi-gpu', action='store_true', help='processing with multi-gpus')
     parser.add_argument('--project_name', type=str)
 
@@ -215,10 +212,9 @@ if __name__ =='__main__':
     args.visdir = pjoin(args.visroot, args.project_name)
     os.makedirs(args.visdir, exist_ok=True)
 
-
     if args.dataset == 'bcd':
         eval = CDEval(args)
         eval.eval()
     else:
-        print('Error: Cannot identify the dataset...(dataset: pcd or vl_cmu_cd)')
+        print('Error: Cannot identify the dataset...(dataset: bcd)')
         exit(-1)

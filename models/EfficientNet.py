@@ -556,6 +556,7 @@ def _efficientnet_conf(
             bneck_conf(6, 3, 2, 16, 24, 2),
             bneck_conf(6, 5, 2, 24, 40, 2),
             bneck_conf(6, 3, 2, 40, 80, 3),
+            # bneck_conf(6, 5, 1, 80, 112, 3),
         ]
         last_channel = None
     elif arch.startswith("efficientnet_v2_s"):

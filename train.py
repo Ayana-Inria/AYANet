@@ -156,7 +156,7 @@ class CDTrain():
         self.device = torch.device("cuda:%s" % self.args.gpu_ids[0] if torch.cuda.is_available() and len(self.args.gpu_ids)>0
                                    else "cpu")
 
-        self.net_G = AYANet(self.args.encoder_arch, self.args.decoder_arch, self.args.seed)
+        self.net_G = AYANet(self.args.encoder_arch, self.args.decoder_arch)
 
         print(self.net_G)
         self.net_G = self._init_net(self.net_G, init_type='normal', init_gain=0.02, gpu_ids=self.args.gpu_ids)
