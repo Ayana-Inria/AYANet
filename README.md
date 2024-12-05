@@ -5,9 +5,9 @@
 </div>
 
 <br>
-The official implementation of **AYANet: A Gabor Wavelet-based and CNN-based Double Encoder for Building Change Detection in Remote Sensing** (ICPR 2024) <br>
+The official implementation of <strong>AYANet: A Gabor Wavelet-based and CNN-based Double Encoder for Building Change Detection in Remote Sensing</strong> (ICPR 2024) <br>
 
-[Link to the paper](https://hal.science/hal-04675243)
+[Link to the proceedings](https://link.springer.com/chapter/10.1007/978-3-031-78347-0_9) [Link to the paper](https://hal.science/hal-04675243)
 <br>
 
 ## :hammer_and_pick: Environmental settings
@@ -193,15 +193,24 @@ The code is released under the GPL-3.0-only license. See `LICENSE` file for more
 
 ## :full_moon_with_face: Citation
 
-If you use this code for your research, please cite our paper (to be updated):
+If you use this code for your research, please cite our paper:
 
 ```
-@inproceedings{AYANet,
-      title={AYANet: A Gabor Wavelet-based and CNN-based Double Encoder for Building Change Detection in Remote Sensing}, 
-      author={Priscilla Indira Osa and Josiane Zerubia and Zoltan Kato},
-      year={2024},
-      
+@InProceedings{10.1007/978-3-031-78347-0_9,
+    author="Osa, Priscilla Indira and Zerubia, Josiane and Kato, Zoltan",
+    editor="Antonacopoulos, Apostolos
+            and Chaudhuri, Subhasis
+            and Chellappa, Rama and Liu, Cheng-Lin
+            and Bhattacharya, Saumik and Pal, Umapada",
+    title="AYANet: A Gabor Wavelet-Based and CNN-Based Double Encoder for Building Change Detection in Remote Sensing",
+    booktitle="Pattern Recognition",
+    year="2025",
+    publisher="Springer Nature Switzerland",
+    address="Cham",
+    pages="131--146",
+    isbn="978-3-031-78347-0"
 }
+
 ```
 
 ## :paw_prints: Acknowledgement
